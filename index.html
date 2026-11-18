@@ -15,6 +15,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            overflow: hidden; /* 防止按上下鍵時網頁跟著捲動 */
         }
 
         #game-container {
@@ -65,6 +66,89 @@
     </div>
 </div>
 
-<script src="game.js"></script>
-</body>
-</html>
+<script>
+    // 這裡直接放入完整的 JavaScript 邏輯
+    const canvas = document.getElementById('tetrisBoard');
+    const ctx = canvas.getContext('2d');
+    const nextCanvas = document.getElementById('nextPiece');
+    const nextCtx = nextCanvas.getContext('2d');
+
+    const ROWS = 20;
+    const COLS = 10;
+    const BLOCK_SIZE = 30;
+
+    const COLORS = [
+        null,
+        '#f4aeb9', '#8a9a5b', '#255a7e', '#d4af37', 
+        '#a13d2d', '#7b6c53', '#5c4033'  
+    ];
+
+    const SHAPES = [
+        [],
+        [[0,0,0,0], [1,1,1,1], [0,0,0,0], [0,0,0,0]], 
+        [[2,0,0], [2,2,2], [0,0,0]], 
+        [[0,0,3], [3,3,3], [0,0,0]], 
+        [[4,4], [4,4]], 
+        [[0,5,5], [5,5,0], [0,0,0]], 
+        [[0,6,0], [6,6,6], [0,0,0]], 
+        [[7,7,0], [0,7,7], [0,0,0]]  
+    ];
+
+    let board = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+    let score = 0, level = 1, dropCounter = 0, dropInterval = 1000, lastTime = 0;
+    let player = { pos: { x: 0, y: 0 }, matrix: null, color: 0 };
+    let nextPlayer = { matrix: null, color: 0 };
+
+    function drawBlock(x, y, colorIndex, context = ctx) {
+        context.fillStyle = COLORS[colorIndex];
+        context.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+        context.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+        context.strokeRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+    }
+
+    function drawMatrix(matrix, offset, context = ctx) {
+        matrix.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value !== 0) drawBlock(x + offset.x, y + offset.y, value, context);
+            });
+        });
+    }
+
+    function draw() {
+        ctx.fillStyle = '#0f0f0f';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        drawMatrix(board, { x: 0, y: 0 });
+        if (player.matrix) drawMatrix(player.matrix, player.pos);
+    }
+
+    function drawNextPiece() {
+        nextCtx.fillStyle = '#1a1a1a';
+        nextCtx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+        if (nextPlayer.matrix) {
+            const offset = {
+                x: (nextCanvas.width / BLOCK_SIZE - nextPlayer.matrix[0].length) / 2,
+                y: (nextCanvas.height / BLOCK_SIZE - nextPlayer.matrix.length) / 2
+            };
+            drawMatrix(nextPlayer.matrix, offset, nextCtx);
+        }
+    }
+
+    function collide(board, player) {
+        const m = player.matrix, o = player.pos;
+        for (let y = 0; y < m.length; ++y) {
+            for (let x = 0; x < m[y].length; ++x) {
+                if (m[y][x] !== 0 && (board[y + o.y] && board[y + o.y][x + o.x]) !== 0) return true;
+            }
+        }
+        return false;
+    }
+
+    function merge(board, player) {
+        player.matrix.forEach((row, y) => {
+            row.forEach((value, x) => {
+                if (value !== 0) board[y + player.pos.y][x + player.pos.x] = value;
+            });
+        });
+    }
+
+    function random
