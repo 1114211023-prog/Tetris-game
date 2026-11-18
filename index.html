@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>落下物語 - テトリス</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho&display=swap');
+
+        body {
+            background-color: #2b2b2b;
+            color: #e8dcc4; 
+            font-family: 'Shippori Mincho', serif; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #game-container {
+            display: flex;
+            gap: 20px;
+            background: #1a1a1a;
+            padding: 30px;
+            border: 4px solid #a13d2d; 
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(161, 61, 45, 0.5);
+        }
+
+        canvas {
+            background-color: #0f0f0f;
+            border: 2px solid #5a5a5a;
+        }
+
+        .ui-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            font-size: 24px;
+        }
+
+        .title { color: #f4aeb9; font-size: 32px; font-weight: bold; } 
+        .label { color: #8a9a5b; font-size: 18px; } 
+        .value { color: #d4af37; font-size: 28px; } 
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <canvas id="tetrisBoard" width="300" height="600"></canvas>
+    <div class="ui-panel">
+        <div class="title">⛩️ 落下物語</div>
+        <div>
+            <div class="label">得点 (Score)</div>
+            <div class="value" id="score">0</div>
+        </div>
+        <div>
+            <div class="label">階級 (Level)</div>
+            <div class="value" id="level">1</div>
+        </div>
+        <div>
+            <div class="label">次の形 (Next)</div>
+            <canvas id="nextPiece" width="120" height="120"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
